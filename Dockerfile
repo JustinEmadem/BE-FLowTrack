@@ -1,6 +1,8 @@
 FROM php:8.3-fpm
 
 WORKDIR /var/www/html
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -16,9 +18,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy composer files first for caching
 COPY composer.json composer.lock ./
+
+# Install dependencies without scripts
 RUN composer install \
     --no-interaction \
     --no-dev \
@@ -26,12 +32,14 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader
 
+# Copy the rest of the source code
 COPY . .
 
-RUN composer run-script post-install-cmd --no-interaction
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Set permissions for Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
+# Expose PHP-FPM port
 EXPOSE 9000
 
 CMD ["php-fpm"]
