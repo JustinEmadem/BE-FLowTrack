@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: be-laravel
+    container_name: be-flowtrack
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
@@ -18,7 +18,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: be-laravel-nginx
+    container_name: be-flowtrack-nginx
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -32,7 +32,7 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: be-laravel-db
+    container_name: be-flowtrack-db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: laravel
