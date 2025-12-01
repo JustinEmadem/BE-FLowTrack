@@ -33,6 +33,7 @@ class AuthController extends Controller
     public function store(StoreUserRequest $request)
     {
          $validated = $request->validated();
+         $validated['password'] = Hash::make($validated['password']);
          $user = User::create($validated);
          $token = $user->createToken('api-token')->plainTextToken;
 
