@@ -1,22 +1,14 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\authentication\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/test', function () {
-    return response()->json([
-        'message' => 'Backend is connected!',
-        'timestamp' => now()
-    ]);
-});
+Route::post('/register', [AuthController::class, 'store']);
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/users', function () {
-    return response()->json([
-        ['id' => 1, 'name' => 'John Doe'],
-        ['id' => 2, 'name' => 'Jane Smith']
-    ]);
-});
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'destroy']);
