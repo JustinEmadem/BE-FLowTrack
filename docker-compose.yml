@@ -35,14 +35,29 @@ services:
     container_name: be-flowtrack-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_PASSWORD: password
-      MYSQL_USER: laravel
+      MYSQL_DATABASE: be-flowtrack
+      MYSQL_ROOT_PASSWORD: be-flowtrack
+      MYSQL_PASSWORD: be-flowtrack
+      MYSQL_USER: be-flowtrack
     ports:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
+    networks:
+      - laravel-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: be-flowtrack-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: be-flowtrack
+    depends_on:
+      - db
     networks:
       - laravel-network
 
