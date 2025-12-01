@@ -23,13 +23,13 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'firstname'     => 'required|string|max:50',
-            'middlename'    => 'string|max:50',
+            'middlename'    => 'nullable|string|max:50',
             'lastname'      => 'required|string|max:50',
-            'email'         => 'required|string|unique:users,email',
-            'address'       => 'string',
-            'bio'           => 'string',
+            'email'         => 'required|string|email|unique:users,email',
+            'address'       => 'nullable|string',
+            'bio'           => 'nullable|string',
             'is_active'     => 'boolean',
-            'password'      => 'required|string|confirmed'
+            'password'      => 'required|string|confirmed|min:8'
         ];
     }
 
