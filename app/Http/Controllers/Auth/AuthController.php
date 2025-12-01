@@ -6,6 +6,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use App\Models\User;
 
 
@@ -34,8 +35,12 @@ class AuthController extends Controller
     {
          $validated = $request->validated();
          $validated['password'] = Hash::make($validated['password']);
+         $role = $validated['role'];
          unset($validated['password_confirmation']);
+         unset($validated['role']);
+
          $user = User::create($validated);
+         $user->assignRole($role);
          $token = $user->createToken('api-token')->plainTextToken;
 
          return response()->json(['user' => $user,'token' => $token,], 201);

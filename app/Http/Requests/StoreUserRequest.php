@@ -29,7 +29,8 @@ class StoreUserRequest extends FormRequest
             'address'       => 'nullable|string',
             'bio'           => 'nullable|string',
             'is_active'     => 'boolean',
-            'password'      => 'required|string|confirmed|min:8'
+            'password'      => 'required|string|confirmed|min:8',
+            'role'          => 'required|string|exists:roles,name',
         ];
     }
 
@@ -37,6 +38,7 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'email.unique' => 'This email is already taken.',
+            'role.required' => 'Please select a role.',
         ];
     }
 }
