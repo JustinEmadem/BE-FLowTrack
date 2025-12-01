@@ -22,15 +22,15 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstname'     => 'required|string|max:50',
-            'middlename'    => 'nullable|string|max:50',
-            'lastname'      => 'required|string|max:50',
-            'email'         => 'required|string|email|unique:users,email',
-            'address'       => 'nullable|string',
-            'bio'           => 'nullable|string',
-            'is_active'     => 'boolean',
-            'password'      => 'required|string|confirmed|min:8',
-            'role'          => 'required|string|exists:roles,name',
+            'firstname'  => 'required|string|max:50',
+            'middlename' => 'nullable|string|max:50',
+            'lastname'   => 'required|string|max:50',
+            'email'      => 'required|string|email|unique:users,email',
+            'address'    => 'nullable|string',
+            'bio'        => 'nullable|string',
+            'is_active'  => 'boolean',
+            'password'   => 'required|string|confirmed|min:8',
+            'role_id'    => 'required|integer|exists:roles,id',
         ];
     }
 

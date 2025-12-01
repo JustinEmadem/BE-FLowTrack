@@ -33,18 +33,20 @@ class AuthController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-         $validated = $request->validated();
-         $validated['password'] = Hash::make($validated['password']);
-         $role = $validated['role'];
-         unset($validated['password_confirmation']);
-         unset($validated['role']);
+        $validated = $request->validated();
+        $validated['password'] = Hash::make($validated['password']);
+        unset($validated['password_confirmation']);
+        $user = User::create($validated);
+        $roleName = \Spatie\Permission\Models\Role::findOrFail($validated['role_id'])->name;
+        $user->assignRole($roleName);
+        $token = $user->createToken('api-token')->plainTextToken;
 
-         $user = User::create($validated);
-         $user->assignRole($role);
-         $token = $user->createToken('api-token')->plainTextToken;
-
-         return response()->json(['user' => $user,'token' => $token,], 201);
+        return response()->json([
+            'user'  => $user->load('roles'), 
+            'token' => $token
+        ], 201);
     }
+
 
     public function login(LoginUserRequest $request)
     {
