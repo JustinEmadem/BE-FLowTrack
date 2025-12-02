@@ -28,6 +28,7 @@ class User extends Authenticatable
         'bio',
         'is_active',
         'password',
+        'role_id',
     ];
 
     /**

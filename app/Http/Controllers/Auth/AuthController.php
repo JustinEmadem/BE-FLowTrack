@@ -17,7 +17,8 @@ class AuthController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return response()->json($users);
     }
 
     /**
@@ -51,12 +52,12 @@ class AuthController extends Controller
     public function login(LoginUserRequest $request)
     {
         $validated = $request->validated();
-        $user = User::where('email', $validated['email'])->first();
+         $user = User::with('roles')->where('email', $validated['email'])->first();
     
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
-    
+
         $token = $user->createToken('api-token')->plainTextToken;
         return response()->json(['user' => $user,'token' => $token,]);
     }
