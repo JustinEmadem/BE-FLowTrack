@@ -159,28 +159,13 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        try {
-            $user = User::findOrFail($id);
-            
-            if ($user->id === auth()->id()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You cannot delete your own account'
-                ], 403);
-            }
-
-            $user->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'User deleted successfully'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete user',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+       $user = User::findOrFail($id);
+       
+       if ($user->id === auth()->id()) {
+           return response()->json(['message' => 'You cannot delete your own account'], 403);
+       }
+    
+       $user->delete();
+       return response()->json(['message' => 'User deleted successfully'], 200);
     }
 }
