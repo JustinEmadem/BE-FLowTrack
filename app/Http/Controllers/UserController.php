@@ -14,24 +14,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            // Spatie uses 'roles' (many-to-many)
-            $query = User::with('roles');
-
-            if ($request->has('search')) {
+        $users = User::with('roles')
+            ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('firstname', 'like', "%{$search}%")
                       ->orWhere('lastname', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%");
                 });
-            }
-
-            // Get all users without pagination for frontend
-            $users = $query->get();
-            
-            // Transform data to match your frontend UserData interface
-            $transformedUsers = $users->map(function($user) {
+            })
+            ->get()
+            ->map(function ($user) {
+                $firstRole = $user->roles->first();
+                
                 return [
                     'id' => $user->id,
                     'firstname' => $user->firstname,
@@ -42,35 +37,15 @@ class UserController extends Controller
                     'address' => $user->address,
                     'bio' => $user->bio,
                     'is_active' => $user->is_active,
-                    'role_id' => $user->roles->first()?->id,
-                    // Create a 'role' object with the first role
-                    'role' => $user->roles->first() ? [
-                        'id' => $user->roles->first()->id,
-                        'name' => $user->roles->first()->name,
+                    'role_id' => $firstRole?->id,
+                    'role' => $firstRole ? [
+                        'id' => $firstRole->id,
+                        'name' => $firstRole->name,
                     ] : null,
-                    // Keep the roles array too
-                    'roles' => $user->roles->map(function($role) {
-                        return [
-                            'id' => $role->id,
-                            'name' => $role->name,
-                        ];
-                    }),
                 ];
             });
-            
-            return response()->json([
-                'success' => true,
-                'data' => $transformedUsers
-            ], 200);
-            
-        } catch (\Exception $e) {
-            \Log::error('Error fetching users: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch users',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        
+        return response()->json(['data' => $users]);
     }
 
     /**
