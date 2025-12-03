@@ -32,31 +32,28 @@ class AuthController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-public function store(StoreUserRequest $request)
-{
-    $validated = $request->validated();
-
-    // Remove role_id from validated data before user creation
-    $roleId = $validated['role_id'] ?? null;
-    unset($validated['role_id']); // Remove role_id so it won't try to insert into users table
-
-    $validated['password'] = Hash::make($validated['password']);
-    unset($validated['password_confirmation']);
-
-    $user = User::create($validated);
-
-    if ($roleId) {
-        $role = \Spatie\Permission\Models\Role::findOrFail($roleId);
-        $user->assignRole($role->name);
+    public function store(StoreUserRequest $request)
+    {
+        $validated = $request->validated();
+        $roleId = $validated['role_id'] ?? null;
+        unset($validated['role_id']);
+        $validated['password'] = Hash::make($validated['password']);
+        unset($validated['password_confirmation']);
+    
+        $user = User::create($validated);
+    
+        if ($roleId) {
+            $role = \Spatie\Permission\Models\Role::findOrFail($roleId);
+            $user->assignRole($role->name);
+        }
+    
+        $token = $user->createToken('api-token')->plainTextToken;
+    
+        return response()->json([
+            'user'  => $user,
+            'token' => $token
+        ], 201);
     }
-
-    $token = $user->createToken('api-token')->plainTextToken;
-
-    return response()->json([
-        'user'  => $user,
-        'token' => $token
-    ], 201);
-}
 
 
 
