@@ -15,10 +15,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy']);
     Route::post('/register', [AuthController::class, 'store']);
 
-
+    Route::apiResource('users', UserController::class);
     
     Route::get('/roles', [RolesController::class, 'getRoles']);
     Route::post('/create-roles', [RolesController::class, 'createRole']);
 });
 
-    Route::apiResource('users', UserController::class);
