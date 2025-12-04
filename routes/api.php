@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/register', [AuthController::class, 'store']);
 
     Route::apiResource('users', UserController::class);
+    Route::get('users/count/total', [UserController::class, 'getUserCount']);
     
     Route::get('/roles', [RolesController::class, 'getRoles']);
     Route::post('/create-roles', [RolesController::class, 'createRole']);
